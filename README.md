@@ -4,6 +4,7 @@ its still in development stage , and works for backend and UI/UX needs to be imp
 
 ## Technology 
 java springBoot
+Used mySql for DataBase
 
 ## Book
 
