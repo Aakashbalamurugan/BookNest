@@ -1,5 +1,9 @@
 # BookNest
 BookNest is a library management application ,
+its still in development stage , and works for backend and UI/UX needs to be implemented .
+
+## technology 
+java springBoot
 
 ## Book
 
