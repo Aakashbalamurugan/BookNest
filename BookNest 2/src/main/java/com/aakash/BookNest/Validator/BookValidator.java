@@ -1,51 +1,62 @@
 package com.aakash.BookNest.Validator;
-import java.util.ArrayList;
-import java.util.List;
 
-import org.springframework.stereotype.Component;
-
+import com.aakash.BookNest.Exception.ValidationBookException;
 import com.aakash.BookNest.Model.Book;
 import com.aakash.BookNest.Validator.Constants.ValidationConstants;
+import org.springframework.stereotype.Component;
 
 @Component
 public class BookValidator {
 
-    public List<String> validate(Book book) {
-        List<String> errors = new ArrayList<>();
-
+    public boolean validate(Book book) throws ValidationBookException {
         if (book == null) {
-            errors.add(ValidationConstants.NULL_BOOK_ERROR);
-            return errors;
+            throw new ValidationBookException(ValidationConstants.NULL_BOOK_ERROR);
         }
 
-        // Validate title
-        if (isNullOrEmpty(book.getTitle())) {
-            errors.add(ValidationConstants.TITLE_NULL_OR_EMPTY_ERROR);
-        } else if (book.getTitle().trim().length() < 2) {
-            errors.add(ValidationConstants.TITLE_LENGTH_ERROR);
-        }
+        validateTitle(book.getTitle());
+        validateAuthor(book.getAuthor());
+        validateGenre(book.getGenre());
+        validateAvailableCopies(book.getAvailableCopies());
 
-        // Validate author
-        if (isNullOrEmpty(book.getAuthor())) {
-            errors.add(ValidationConstants.AUTHOR_NULL_OR_EMPTY_ERROR);
-        } else if (book.getAuthor().trim().length() < 2) {
-            errors.add(ValidationConstants.AUTHOR_LENGTH_ERROR);
-        }
-
-        // Validate genre
-        if (isNullOrEmpty(book.getGenre())) {
-            errors.add(ValidationConstants.GENRE_NULL_OR_EMPTY_ERROR);
-        }
-
-        // Validate available copies
-        if (book.getAvailableCopies() < 0) {
-            errors.add(ValidationConstants.AVAILABLE_COPIES_NEGATIVE_ERROR);
-        }
-
-        return errors;
+        return true;
     }
 
-    private static boolean isNullOrEmpty(String str) {
+    public boolean validId(int id) throws ValidationBookException {
+        if (id < 0) {
+            throw new ValidationBookException(ValidationConstants.INVALID_ERROR);
+        }
+        return true;
+    }
+
+    private void validateTitle(String title) throws ValidationBookException {
+        if (isNullOrEmpty(title)) {
+            throw new ValidationBookException(ValidationConstants.TITLE_NULL_OR_EMPTY_ERROR);
+        } else if (title.trim().length() < 2) {
+            throw new ValidationBookException(ValidationConstants.TITLE_LENGTH_ERROR);
+        }
+    }
+
+    private void validateAuthor(String author) throws ValidationBookException {
+        if (isNullOrEmpty(author)) {
+            throw new ValidationBookException(ValidationConstants.AUTHOR_NULL_OR_EMPTY_ERROR);
+        } else if (author.trim().length() < 2) {
+            throw new ValidationBookException(ValidationConstants.AUTHOR_LENGTH_ERROR);
+        }
+    }
+
+    private void validateGenre(String genre) throws ValidationBookException {
+        if (isNullOrEmpty(genre)) {
+            throw new ValidationBookException(ValidationConstants.GENRE_NULL_OR_EMPTY_ERROR);
+        }
+    }
+
+    private void validateAvailableCopies(int availableCopies) throws ValidationBookException {
+        if (availableCopies <= 0) {
+            throw new ValidationBookException(ValidationConstants.AVAILABLE_COPIES_NEGATIVE_ERROR);
+        }
+    }
+
+    private boolean isNullOrEmpty(String str) {
         return str == null || str.trim().isEmpty();
     }
 }

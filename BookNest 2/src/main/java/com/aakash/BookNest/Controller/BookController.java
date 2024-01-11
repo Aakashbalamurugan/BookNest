@@ -1,110 +1,105 @@
 package com.aakash.BookNest.Controller;
 
-import java.util.List;
-
+import com.aakash.BookNest.DTO.BookRequestDTO;
+import com.aakash.BookNest.DTO.BookResponseDTO;
+import com.aakash.BookNest.Exception.ServiceException;
+import com.aakash.BookNest.Service.BookService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.*;
 
-
-import org.springframework.web.bind.annotation.ResponseBody;
-
-
-import com.aakash.BookNest.DAO.BookDao;
-import com.aakash.BookNest.Model.Book;
-import com.aakash.BookNest.Validator.BookValidator;
+import java.util.List;
 
 @Controller
 public class BookController {
 
-	@Autowired
-	BookDao bookDao;
-
-	@Autowired
-	BookValidator bookValidator;
-
-	@GetMapping("/")
-	@ResponseBody
-	public List<Book> showAllBook() {
-	
-		List<Book> books = bookDao.findAll();
-		System.out.println(books);
+    @Autowired
+    BookService bookService;
 
 
-		return bookDao.findAll();
+    @GetMapping("all-book")
+    @ResponseBody
+    public ResponseEntity<List<BookResponseDTO>> showAllBook() {
 
-	}
+        try {
 
-	@PostMapping("addBook")
-	@ResponseBody
-	public String addBook(Book book) {
-		List<String> validate = bookValidator.validate(book);
-		if(validate.isEmpty() && !bookDao.existsById(Integer.valueOf(book.getId()))) {
-		bookDao.save(book);
-		return "{Status: success, error: null }";
-		
-		}else {
-			if(!bookDao.existsById(Integer.valueOf(book.getId()))){
-				return "{Status: error, error: Book already exists }";
-			}
-			
-			return "{Status: error, error: "+String.join(" ", validate)+ " }";
-		}
+            List<BookResponseDTO> bookResponseDTOS = bookService.getAll();
+            return ResponseEntity.ok(bookResponseDTOS);
 
-	} 
+        } catch (ServiceException e) {
+            System.out.print(e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.badRequest().build();
+        }
+    }
 
-	@GetMapping("book/{id}")
-	@ResponseBody
-	public Book showBook(@PathVariable("id") int id) {
-	
-		Book book = bookDao.getReferenceById(id);
-		System.out.println(book);
-		
-		return book;
-	}
+    @PostMapping(value = "/add-book", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @ResponseBody
+    public ResponseEntity<BookResponseDTO> addBook(@ModelAttribute BookRequestDTO bookDTO) {
+        try {
 
-	@PutMapping("updateBook")
-	@ResponseBody
-	public String UpdateBook(Book book) {
+            BookResponseDTO result = bookService.add(bookDTO);
+            return ResponseEntity.ok(result);
 
-		if (book.getId() == 0) {
-			return "{Status: error, error: Id is requried }";
-		}
-		
-		List<String> validate = bookValidator.validate(book);
+        } catch (ServiceException e) {
+            System.out.print(e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.badRequest().build();
+        }
+    }
 
-		if (bookDao.existsById(Integer.valueOf(book.getId())) && validate.isEmpty()) {
-			
-			bookDao.deleteById(Integer.valueOf(book.getId()));
-			bookDao.save(book);
-			
 
-			return "{Status: success, error: null }";
-		} else {
-			return "{Status: error, error: "+String.join(" ", validate)+ " }";
-		}
-	}
+    @GetMapping("book/{id}")
+    @ResponseBody
+    public ResponseEntity<BookResponseDTO> showBook(@PathVariable("id") int id) {
 
-	@DeleteMapping("deleteBook")
-	@ResponseBody
-	public String DeleteBook(Book book) {
+        try {
+            BookResponseDTO result = bookService.get(id);
+            return ResponseEntity.ok(result);
+        } catch (ServiceException e) {
+            System.out.print(e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.badRequest().build();
+        }
 
-		if (book.getId() == 0) {
-			return "{Status: error, error: Id is requried }";
-		}
 
-		if (bookDao.existsById(Integer.valueOf(book.getId()))) {
-			bookDao.deleteById(Integer.valueOf(book.getId()));
+    }
 
-			return "{Status: success, error: null }";
-		} else {
-			return "{Status: error, error: id doesnt exisits }";
-		}
-	}
+    @PutMapping(value = "update-Book", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @ResponseBody
+    public ResponseEntity<BookResponseDTO> updateBook(@ModelAttribute BookResponseDTO bookDTO) {
+
+        try {
+            System.out.print("update  " + bookDTO.getId());
+            BookResponseDTO result = bookService.update(bookDTO);
+            return ResponseEntity.ok(result);
+
+        } catch (ServiceException e) {
+            System.out.print(e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.badRequest().build();
+        }
+
+
+    }
+
+    @DeleteMapping("deleteBook/{id}")
+    @ResponseBody
+    public ResponseEntity<String> DeleteBook(@PathVariable("id") int id) {
+        try {
+            if (bookService.delete(id))
+                return ResponseEntity.ok().build();
+            else
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (ServiceException e) {
+            System.out.print(e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.badRequest().build();
+        }
+    }
 
 }
