@@ -1,7 +1,14 @@
+com/aakash/BookNest/Exception/ServiceException.class
 com/aakash/BookNest/DAO/BookDao.class
-com/aakash/BookNest/Validator/Constants/ValidationConstants.class
+com/aakash/BookNest/DTO/BookDTO.class
+com/aakash/BookNest/Exception/ValidationBookException.class
 com/aakash/BookNest/Controller/BookController.class
+com/aakash/BookNest/Converter/BookConverter.class
 com/aakash/BookNest/Model/Genre.class
+com/aakash/BookNest/Service/BookService.class
+com/aakash/BookNest/DTO/BookResponseDTO.class
+com/aakash/BookNest/Validator/Constants/ValidationConstants.class
 com/aakash/BookNest/Model/Book.class
+com/aakash/BookNest/DTO/BookRequestDTO.class
 com/aakash/BookNest/Validator/BookValidator.class
 com/aakash/BookNest/BookNestApplication.class

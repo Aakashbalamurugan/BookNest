@@ -1,64 +1,54 @@
 package com.aakash.BookNest.Model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import javax.persistence.*;
+
+
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
+
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
+
 
 @Entity
+@Getter
+@Setter
 public class Book {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
 
-	@Id
-	@GeneratedValue
-	private int id;
-	private String title;
-	private String author;
-	private String genre;
-	private int availableCopies;
+    @Column(unique = true, nullable = false)
+    private String title;
 
 
-	@Override
-	public String toString() { 
-		return "Book [id=" + id + ", title=" + title + ", author=" + author + ", genre=" + genre + ", availableCopies="
-				+ availableCopies + "]";
-	}
+    @Column(nullable = false)
+    private Integer availableCopies;
 
-	public int getId() {
-		return id;
-	}
+    @ManyToMany
+    @JoinTable(
+            name = "book_author",
+            joinColumns = @JoinColumn(name = "book_id"),
+            inverseJoinColumns = @JoinColumn(name = "author_id"))
+    private Set<Author> authors = new HashSet<>();
 
-	public void setId(int id) {
-		this.id = id;
-	}
+    @ManyToOne
+    @JoinColumn(name = "category_id")
+    private Category category;
 
-	public String getTitle() {
-		return title;
-	}
+    @CreationTimestamp
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(nullable = false)
+    private Date createdAt;
 
-	public void setTitle(String title) {
-		this.title = title;
-	}
+    @UpdateTimestamp
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(nullable = false)
+    private Date updatedAt;
 
-	public String getAuthor() {
-		return author;
-	}
 
-	public void setAuthor(String author) {
-		this.author = author;
-	}
-
-	public String getGenre() {
-		return genre;
-	}
-
-	public void setGenre(String genre) {
-		this.genre = genre;
-	}
-
-	public int getAvailableCopies() {
-		return availableCopies;
-	}
-
-	public void setAvailableCopies(int availableCopies) {
-		this.availableCopies = availableCopies;
-	}
 }
