@@ -8,13 +8,15 @@ Used mySql for DataBase
 
 ## Book
 
-| Field           | Type    | Extras                                        |
-| --------------- | ------- | ---------------------------------------------- |
-| id              | Integer | Primary key, unique identifier for the book.   |
-| title           | String  | Title of the book.                             |
-| author          | String  | Author of the book.                            |
-| genre           | String  | Genre or category of the book.                 |
-| availableCopies | Integer | Number of copies available for the book.       |
+| Field             | Type          | Description                       |
+|-------------------|---------------|-----------------------------------|
+| id                | int           | Unique identifier                 |
+| title             | String        | Book title                        |
+| authors           | List<Author>  | List of authors associated        |
+| category          | Category      | Category of the book              |
+| availableCopies   | Integer       | Number of available copies        |
+| createdAt         | Date          | Timestamp of creation             |
+| updatedAt         | Date          | Timestamp of last update          |
 
 
 ## Features
@@ -28,4 +30,15 @@ Used mySql for DataBase
  Get all the Books details in the DB as a JSON format
 ### DeleteBook
    Deletes the book values with reference of the id
+
+## Author
+
+| Field | Type   | Description               |
+|-------|--------|---------------------------|
+| id    | long   | Unique identifier         |
+| name  | String | Author's name              |
+| books | List   | List of books by the author|
+
+
+
 
