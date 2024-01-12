@@ -4,10 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.aakash.BookNest.Converter.BookConverter;
-import com.aakash.BookNest.DTO.BookRequestDTO;
-import com.aakash.BookNest.DTO.BookResponseDTO;
+import com.aakash.BookNest.DAO.AuthorDao;
+import com.aakash.BookNest.DTO.BookDTOWithOutId;
+import com.aakash.BookNest.DTO.BookDTOWithId;
 import com.aakash.BookNest.Exception.ServiceException;
 import com.aakash.BookNest.Exception.ValidationBookException;
+import com.aakash.BookNest.Model.Author;
 import com.aakash.BookNest.Validator.BookValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -26,20 +28,24 @@ public class BookService extends Services {
     private BookDao bookDAO;
 
     @Autowired
+    private AuthorService authorService;
+
+    @Autowired
     private BookValidator validator;
 
     @Autowired
     BookConverter converter;
 
 
-    public List<BookResponseDTO> getAll() throws ServiceException {
+    public List<BookDTOWithId> getAll() throws ServiceException {
         try {
             List<Book> bookList = bookDAO.findAll();
-            List<BookResponseDTO> bookResponseDTOS = new ArrayList<>();
+
+            List<BookDTOWithId> bookDTOWithIds = new ArrayList<>();
             for (Book i : bookList) {
-                bookResponseDTOS.add(converter.BookToBookRep(i));
+                bookDTOWithIds.add(converter.BookToBookRep(i));
             }
-            return bookResponseDTOS;
+            return bookDTOWithIds;
         } catch (Exception e) {
             throw new ServiceException(e.getMessage());
         }
@@ -47,25 +53,34 @@ public class BookService extends Services {
     }
 
 
-    public BookResponseDTO add(BookRequestDTO bookDTO) throws ServiceException {
+    public BookDTOWithId add(BookDTOWithOutId bookDTO) throws ServiceException {
         try {
             Book book = converter.BookReqDTOToBook(bookDTO);
             validator.validate(book);
 
             if (!bookDAO.existsById(book.getId()) && !bookDAO.existsByTitle(book.getTitle())) {
+                for(Author i:book.getAuthors()) {
+                    if (!authorService.existByName(i.getName())){
+                        throw new ServiceException("invalid Author Defined");
+                    }
+                }
                 Book result = bookDAO.save(book);
+                System.out.print(result);
+                System.out.print(result.getCategory().getName());
                 return converter.BookToBookRep(result);
             } else {
-                throw new ServiceException("Invalid book ID");
+                throw new ServiceException("Invalid book ID Or Book already Exists");
             }
         } catch (ValidationBookException e) {
             throw new ServiceException("Invalid book data: " + e.getMessage());
         } catch (Exception e) {
+            e.printStackTrace();
             throw new ServiceException(e.getMessage());
+
         }
     }
 
-    public BookResponseDTO get(int id) throws ServiceException {
+    public BookDTOWithId get(int id) throws ServiceException {
         try {
             validator.validId(id);
             Book result = bookDAO.getOne(id);
@@ -77,7 +92,7 @@ public class BookService extends Services {
         }
     }
 
-    public BookResponseDTO update(BookResponseDTO newFieldDTO) throws ServiceException {
+    public BookDTOWithId update(BookDTOWithId newFieldDTO) throws ServiceException {
         try {
             Book newBook = converter.BookRepDTOToBook(newFieldDTO);
 
@@ -104,6 +119,18 @@ public class BookService extends Services {
         }
     }
 
+    public Book getByTitle(String title) throws ServiceException {
+        try {
+
+            return bookDAO.findByTitle(title);
+
+        } catch (Exception e) {
+            throw new ServiceException(e.getMessage());
+        }
+    }
+
+
+
     private boolean nullCheck(String str) {
         return str != null && !str.isEmpty();
     }
@@ -120,12 +147,24 @@ public class BookService extends Services {
                 }
                 oldBook.setTitle(newBook.getTitle());
             }
-            if (nullCheck(newBook.getGenre())) {
-                oldBook.setGenre(newBook.getGenre());
-            }
-            if (nullCheck(newBook.getAuthor())) {
-                oldBook.setAuthor(newBook.getAuthor());
-            }
+//            if (nullCheck(newBook.getGenre())) {
+//                oldBook.setGenre(newBook.getGenre());
+//            }
+          if (!newBook.getAuthors().isEmpty()){
+              boolean flag = false;
+              for(Author i: newBook.getAuthors()) {
+                  if (authorService.existByName(i.getName())) {
+                      flag = true;
+                  }
+                  else {
+                      throw new ServiceException("invalid Author Defined");
+                  }
+              }
+
+              if (flag) {
+                  oldBook.setAuthors(newBook.getAuthors());
+              }
+          }
             if (newBook.getAvailableCopies() != 0) {
                 oldBook.setAvailableCopies(newBook.getAvailableCopies());
             }

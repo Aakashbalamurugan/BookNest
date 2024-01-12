@@ -9,9 +9,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 
 @Entity
@@ -25,20 +23,19 @@ public class Book {
     @Column(unique = true, nullable = false)
     private String title;
 
-
-    @Column(nullable = false)
-    private Integer availableCopies;
-
     @ManyToMany
     @JoinTable(
             name = "book_author",
             joinColumns = @JoinColumn(name = "book_id"),
             inverseJoinColumns = @JoinColumn(name = "author_id"))
-    private Set<Author> authors = new HashSet<>();
+    private List<Author> authors = new ArrayList<>();
 
     @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;
+
+    @Column(nullable = false)
+    private Integer availableCopies;
 
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)

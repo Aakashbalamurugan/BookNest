@@ -1,7 +1,7 @@
 package com.aakash.BookNest.Controller;
 
-import com.aakash.BookNest.DTO.BookRequestDTO;
-import com.aakash.BookNest.DTO.BookResponseDTO;
+import com.aakash.BookNest.DTO.BookDTOWithOutId;
+import com.aakash.BookNest.DTO.BookDTOWithId;
 import com.aakash.BookNest.Exception.ServiceException;
 import com.aakash.BookNest.Service.BookService;
 
@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.constraints.Min;
 import java.util.List;
 
 @Controller
@@ -23,12 +24,12 @@ public class BookController {
 
     @GetMapping("all-book")
     @ResponseBody
-    public ResponseEntity<List<BookResponseDTO>> showAllBook() {
+    public ResponseEntity<List<BookDTOWithId>> showAllBook() {
 
         try {
 
-            List<BookResponseDTO> bookResponseDTOS = bookService.getAll();
-            return ResponseEntity.ok(bookResponseDTOS);
+            List<BookDTOWithId> bookDTOWithIds = bookService.getAll();
+            return ResponseEntity.ok(bookDTOWithIds);
 
         } catch (ServiceException e) {
             System.out.print(e.getMessage());
@@ -39,10 +40,10 @@ public class BookController {
 
     @PostMapping(value = "/add-book", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseBody
-    public ResponseEntity<BookResponseDTO> addBook(@ModelAttribute BookRequestDTO bookDTO) {
+    public ResponseEntity<BookDTOWithId> addBook(@ModelAttribute BookDTOWithOutId bookDTO) {
         try {
 
-            BookResponseDTO result = bookService.add(bookDTO);
+            BookDTOWithId result = bookService.add(bookDTO);
             return ResponseEntity.ok(result);
 
         } catch (ServiceException e) {
@@ -55,10 +56,10 @@ public class BookController {
 
     @GetMapping("book/{id}")
     @ResponseBody
-    public ResponseEntity<BookResponseDTO> showBook(@PathVariable("id") int id) {
+    public ResponseEntity<BookDTOWithId> showBook(@PathVariable("id") @Min(1) int id) {
 
         try {
-            BookResponseDTO result = bookService.get(id);
+            BookDTOWithId result = bookService.get(id);
             return ResponseEntity.ok(result);
         } catch (ServiceException e) {
             System.out.print(e.getMessage());
@@ -71,11 +72,11 @@ public class BookController {
 
     @PutMapping(value = "update-Book", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseBody
-    public ResponseEntity<BookResponseDTO> updateBook(@ModelAttribute BookResponseDTO bookDTO) {
+    public ResponseEntity<BookDTOWithId> updateBook(@ModelAttribute BookDTOWithId bookDTO) {
 
         try {
             System.out.print("update  " + bookDTO.getId());
-            BookResponseDTO result = bookService.update(bookDTO);
+            BookDTOWithId result = bookService.update(bookDTO);
             return ResponseEntity.ok(result);
 
         } catch (ServiceException e) {

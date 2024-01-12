@@ -4,9 +4,9 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.stereotype.Component;
 
-
-@Getter
 @Setter
+@Getter
 @Component
-public class BookRequestDTO extends BookDTO {
+public class CategoryDTO {
+    private String name;
 }
