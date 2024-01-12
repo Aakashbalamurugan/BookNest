@@ -10,6 +10,6 @@ public interface BookDao extends JpaRepository<Book, Integer> {
 
     boolean existsByTitle(String title);
 
-
+    Book findByTitle(String title);
     long countByTitle(String title);
 }

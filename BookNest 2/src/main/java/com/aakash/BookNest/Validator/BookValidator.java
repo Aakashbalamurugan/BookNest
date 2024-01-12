@@ -5,6 +5,8 @@ import com.aakash.BookNest.Model.Book;
 import com.aakash.BookNest.Validator.Constants.ValidationConstants;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 public class BookValidator {
 
@@ -14,8 +16,8 @@ public class BookValidator {
         }
 
         validateTitle(book.getTitle());
-        validateAuthor(book.getAuthor());
-        validateGenre(book.getGenre());
+    //    validateAuthor(book.getAuthors());
+    //    validateGenre(book.getGenre());
         validateAvailableCopies(book.getAvailableCopies());
 
         return true;

@@ -3,6 +3,7 @@ package com.aakash.BookNest.Exception;
 public class ValidationBookException extends Exception {
 
     public ValidationBookException(String message) {
+
         super(message);
     }
 
