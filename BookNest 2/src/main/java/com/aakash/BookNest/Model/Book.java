@@ -1,6 +1,6 @@
 package com.aakash.BookNest.Model;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 
 import lombok.Getter;

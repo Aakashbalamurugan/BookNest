@@ -8,4 +8,5 @@ import org.springframework.stereotype.Component;
 @Setter
 @Component
 public class CategoryDTOWithOutId extends CategoryDTO {
+
 }

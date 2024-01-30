@@ -3,11 +3,9 @@ package com.aakash.BookNest.Model;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 @Getter
 @Setter
 @Entity
@@ -16,7 +14,7 @@ public class Author {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-
+    @Column(unique = true, nullable = false)
     private String name;
 
     @ManyToMany(mappedBy = "authors")

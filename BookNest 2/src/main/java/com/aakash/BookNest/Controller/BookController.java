@@ -13,9 +13,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Controller
+@RequestMapping("/api/v1/books")
 public class BookController {
 
     @Autowired
@@ -38,9 +40,9 @@ public class BookController {
         }
     }
 
-    @PostMapping(value = "/add-book", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/add-book", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public ResponseEntity<BookDTOWithId> addBook(@ModelAttribute BookDTOWithOutId bookDTO) {
+    public ResponseEntity<BookDTOWithId> addBook(@RequestBody BookDTOWithOutId bookDTO) {
         try {
 
             BookDTOWithId result = bookService.add(bookDTO);
@@ -56,7 +58,7 @@ public class BookController {
 
     @GetMapping("book/{id}")
     @ResponseBody
-    public ResponseEntity<BookDTOWithId> showBook(@PathVariable("id") @Min(1) int id) {
+    public ResponseEntity<BookDTOWithId> showBook(@PathVariable("id") int id) {
 
         try {
             BookDTOWithId result = bookService.get(id);
@@ -70,9 +72,9 @@ public class BookController {
 
     }
 
-    @PutMapping(value = "update-Book", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PutMapping(value = "update-Book", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public ResponseEntity<BookDTOWithId> updateBook(@ModelAttribute BookDTOWithId bookDTO) {
+    public ResponseEntity<BookDTOWithId> updateBook(@RequestBody BookDTOWithId bookDTO) {
 
         try {
             System.out.print("update  " + bookDTO.getId());
@@ -90,7 +92,7 @@ public class BookController {
 
     @DeleteMapping("deleteBook/{id}")
     @ResponseBody
-    public ResponseEntity<String> DeleteBook(@PathVariable("id") int id) {
+    public ResponseEntity<String> DeleteBook(@PathVariable("id") @NotNull int id) {
         try {
             if (bookService.delete(id))
                 return ResponseEntity.ok().build();

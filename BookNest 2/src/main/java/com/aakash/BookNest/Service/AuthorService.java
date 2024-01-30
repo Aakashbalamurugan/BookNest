@@ -6,6 +6,7 @@ import com.aakash.BookNest.DTO.*;
 import com.aakash.BookNest.Exception.ServiceException;
 import com.aakash.BookNest.Model.Author;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -13,12 +14,14 @@ import java.util.List;
 
 @Service
 public class AuthorService {
+
     @Autowired
+    @Lazy
     AuthorDao authorDao;
 
     @Autowired
     AuthorConvert authorConvert;
-    public List<AuthorDTOWithId> getAll() throws ServiceException {
+    public List<AuthorDTOWithId> getAll()  {
        List<Author> authorList =  authorDao.findAll();
        List<AuthorDTOWithId> result = new ArrayList<>();
        for (Author i:authorList){
@@ -28,7 +31,7 @@ public class AuthorService {
     }
 
 
-    public AuthorDTOWithId add(AuthorDTOWithOutId bookDTO) throws ServiceException {
+    public AuthorDTOWithId add(AuthorDTOWithOutId bookDTO)  {
         Author author =authorConvert.authorDTOWithOutIdToAuthor(bookDTO);
         return authorConvert.authorToAuthorDTOWithId( authorDao.save(author));
 
@@ -66,7 +69,7 @@ public class AuthorService {
         }
     }
 
-    public boolean existByName(String name) throws ServiceException{
+    public boolean existByName(String name) throws ServiceException {
       try {
           return authorDao.existsByname(name);
       }catch (Exception e){
